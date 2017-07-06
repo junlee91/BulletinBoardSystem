@@ -43,7 +43,7 @@
 		<div class="col-lg-4">
 			<div class="jumbotron" style="padding-top:20px;">
 				<form method="post" action="joinAction.jsp">
-					<h3 style="text-align: center";>Sign Up Page</h3>
+					<h3 style="text-align: center;">Sign Up Page</h3>
 					<div class="form-group">
 						<input type="text" class="form-control" placeholder="ID" name="userID" maxlength="20">
 					</div>
