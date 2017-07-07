@@ -19,6 +19,15 @@
 			userID = (String)session.getAttribute("userID");
 		}
 		
+		if(userID == null){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('Please Login.')");
+			script.println("location.href = 'login.jsp'");
+			script.println("</script>");
+			
+		}
+		
 		int bbsID = 0;
 		if(request.getParameter("bbsID") != null){
 			bbsID = Integer.parseInt(request.getParameter("bbsID"));
@@ -34,8 +43,16 @@
 		}
 		
 		Bbs bbs = new BbsDAO().getBbs(bbsID);
-	
+		if(!userID.equals(bbs.getUserID())){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('Permission denied.')");
+			script.println("location.href = 'bbs.jsp'");
+			script.println("</script>");
+		}
 	%>
+
+
 
 	<nav class="navbar navbar-default">
 		<div class="navbar-header">
@@ -53,23 +70,6 @@
 				<li><a href="main.jsp">Main</a></li>
 				<li class="active"><a href="bbs.jsp">Board</a></li>
 			</ul>
-			<%
-				if(userID == null){			
-			%>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle"
-						data-toggle="dropdown" role="button" aria-haspopup="true"
-						aria-expanded="false">Connect<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="login.jsp">Login</a></li>
-						<li><a href="join.jsp">Sign Up</a></li>
-					</ul>
-				</li>
-			</ul>
-			<%
-				} else {
-			%>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle"
@@ -80,52 +80,32 @@
 					</ul>
 				</li>
 			</ul>
-			<%
-				}
-			%>
 		</div>
 	</nav>
 	
 	<div class="container">
 		<div class="row">
-
+		<form  method="post" action="updateAction.jsp?bbsID=<%= bbsID %>">
 			<table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
 				<thead>
 					<tr> 
-						<th colspan="3" style="background-color: #eeeeee; text-align: center;">View Board</th>
+						<th colspan="2" style="background-color: #eeeeee; text-align: center;">Board Edit Format</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td style="width: 20%;"> Title</td>
-						<td colspan="2"><%= bbs.getBbsTitle()
-						.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>")%> </td>
+						<td><input type="text" class="form-control" placeholder="Title" name="bbsTitle" maxlength="50" 
+						value="<%= bbs.getBbsTitle() %>"> </td>
 					</tr>
 					<tr>
-						<td>Author</td>
-						<td colspan="2"><%= bbs.getUserID() %> </td>
-					</tr>
-					<tr>
-						<td>Date</td>
-						<td colspan="2"><%= bbs.getBbsDate().substring(0,11) + bbs.getBbsDate().substring(11,13) + ":" 
-								+ bbs.getBbsDate().substring(14,16) %> </td>
-					</tr>
-					<tr>
-						<td>Content</td>
-						<td colspan="2" style="min-heitgh: 200px; text-align: left;"><%= bbs.getBbsContent()
-						.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>") %> </td>
+						<td><textarea class="form-control" placeholder="Content" name="bbsContent" maxlength="2048"
+							style="height: 350px;"><%= bbs.getBbsContent() %></textarea></td>
 					</tr>
 				</tbody>
 			</table>	
-			<a href="bbs.jsp" class="btn btn-primary">List</a>
-			<%
-				if(userID != null && userID.equals(bbs.getUserID())){
-			%>
-				<a href="update.jsp?bbsID=<%= bbsID %>" class="btn btn-primary">Edit</a>
-				<a onclick="return confirm('Are you sure to delete?')" href="deleteAction.jsp?bbsID=<%= bbsID %>" class="btn btn-primary">Delete</a>
-			<%
-				}
-			%>
+			<input type="submit" class="btn btn-primary pull-right" value="Edit">	
+		</form>
+			
 		</div>
 	</div>
 	
